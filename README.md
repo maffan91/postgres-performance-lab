@@ -18,7 +18,12 @@ an empty postgres instance will be up. Open Adminer using [http://localhost:8080
 
 3. Next, we'll fill the database with some dummy data. Copy & paste the sql from the given sql scripts in this order:
 
--
+- Categories: `5_categories.sql`
+- Customers: `10_000_customers.sql`
+- Products: `5_000_products.sql`
+- Orders: `100_000_orders.sql`
+- Order Items: `500_000_order_items.sql`
+- Payments: `100_000_payments.sql`
 
 ### Analyze Index Performance
 
