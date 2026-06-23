@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres
+    restart: always
+
+    shm_size: 128mb
+
+    environment:
+      POSTGRES_DB: practice_db
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
