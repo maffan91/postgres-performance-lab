@@ -27,6 +27,4 @@ an empty postgres instance will be up. Open Adminer using [http://localhost:8080
 
 4. Now, we'll add indexes to the tables. Copy & paste the `indexes.sql` to the SQL command and hit execute.
 
-### Analyze Index Performance
-
-It's time to analyze index performance and see how Postgres query planner works.
+### Practice Queries
