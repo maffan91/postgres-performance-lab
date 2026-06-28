@@ -25,8 +25,8 @@ an empty postgres instance will be up. Open Adminer using [http://localhost:8080
 - Order Items: `500_000_order_items.sql`
 - Payments: `100_000_payments.sql`
 
+4. Now, we'll add indexes to the tables. Copy & paste the `indexes.sql` to the SQL command and hit execute.
+
 ### Analyze Index Performance
 
-1. Now, try searching the record using `email` and notice the time it takes.
-
-2. Search the same record again but this time, use `id` to find it, and again notice the time. Also, see the difference in time.
+It's time to analyze index performance and see how Postgres query planner works.
