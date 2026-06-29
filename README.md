@@ -28,3 +28,46 @@ an empty postgres instance will be up. Open Adminer using [http://localhost:8080
 4. Now, we'll add indexes to the tables. Copy & paste the `indexes.sql` to the SQL command and hit execute.
 
 ### Practice Queries
+
+#### 1. Top Ten Customers by Revenue
+
+```
+SELECT
+    c.id,
+    c.first_name,
+    c.last_name,
+    SUM(p.amount) revenue
+FROM customers c
+JOIN orders o
+    ON o.customer_id = c.id
+JOIN payments p
+    ON p.order_id = o.id
+GROUP BY c.id
+ORDER BY revenue DESC
+LIMIT 10;
+```
+
+#### 2. Best Selling product
+
+```
+SELECT
+    p.name,
+    SUM(oi.quantity) total_sold
+FROM products p
+JOIN order_items oi
+    ON oi.product_id = p.id
+GROUP BY p.id
+ORDER BY total_sold DESC
+LIMIT 20;
+```
+
+#### 3. Monthly Revenue
+
+```
+SELECT
+    DATE_TRUNC('month', payment_date) month,
+    SUM(amount)
+FROM payments
+GROUP BY month
+ORDER BY month;
+```
