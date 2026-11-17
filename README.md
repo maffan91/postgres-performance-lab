@@ -27,6 +27,8 @@ an empty postgres instance will be up. Open Adminer using [http://localhost:8080
 
 4. Now, we'll add indexes to the tables. Copy & paste the `indexes.sql` to the SQL command and hit execute.
 
+To see query plans, use `EXPLAIN (ANALYZE, BUFFERS)` in front of any query. For a worked set of before/after comparisons, see [performance_examples.md](performance_examples.md). `drop_indexes.sql` removes the indexes from `indexes.sql` so you can compare without reloading the data.
+
 ### Practice Queries
 
 #### 1. Top Ten Customers by Revenue
@@ -65,9 +67,36 @@ LIMIT 20;
 
 ```
 SELECT
-    DATE_TRUNC('month', payment_date) month,
+    DATE_TRUNC('month', payment_date) AS month,
     SUM(amount)
 FROM payments
 GROUP BY month
 ORDER BY month;
+```
+
+#### 4. Cancelled Order Rate by Customer
+
+```
+SELECT
+    c.id,
+    c.first_name,
+    COUNT(*) FILTER (WHERE o.status = 'cancelled') * 100.0 / COUNT(*) AS cancelled_pct
+FROM customers c
+JOIN orders o
+    ON o.customer_id = c.id
+GROUP BY c.id, c.first_name
+ORDER BY cancelled_pct DESC, c.id
+LIMIT 10;
+```
+
+#### 5. Orders Without Any Items
+
+```
+SELECT o.id, o.total_amount
+FROM orders o
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM order_items oi
+    WHERE oi.order_id = o.id
+);
 ```
