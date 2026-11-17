@@ -2,10 +2,11 @@ INSERT INTO payments(
     order_id,
     payment_method,
     amount,
+    payment_date,
     status
 )
 SELECT
-    id,
+    o.id,
     (
         ARRAY[
             'credit_card',
@@ -13,6 +14,7 @@ SELECT
             'paypal'
         ]
     )[floor(random()*3 + 1)],
-    total_amount,
+    o.total_amount,
+    o.order_date + (random() * interval '2 days'),
     'completed'
-FROM orders;
+FROM orders o;
