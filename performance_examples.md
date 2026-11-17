@@ -67,7 +67,7 @@ SELECT * FROM orders
 WHERE customer_id = 42 AND order_date >= '2026-01-01';
 ```
 
-With only `idx_orders_customer_id` the plan is a `Bitmap Index Scan` and takes about **0.07 ms**. Adding `CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date);` gave about **0.20 ms**, which is no faster.
+With only `idx_orders_customer_id` the plan is a `Bitmap Index Scan` and takes about **0.07 ms**. Adding `CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date);` gave about **0.20 ms**, which is no faster. Drop it before the next example with `DROP INDEX idx_orders_customer_date;`.
 
 Each customer here has about 10 orders, so the existing index already narrows the result enough. A composite index helps more when the first column matches many rows and the second column filters or sorts them. Try it on a customer with more orders, or on a query that sorts by `order_date` within a customer.
 
@@ -81,7 +81,7 @@ WHERE customer_id BETWEEN 100 AND 400;
 
 With `idx_orders_customer_id` alone, the plan is a `Bitmap Heap Scan` and takes about **1.6 ms**.
 
-After `CREATE INDEX idx_orders_cust_incl ON orders(customer_id) INCLUDE (status);` and `VACUUM ANALYZE orders;`, the plan is an `Index Only Scan` with `Heap Fetches: 0`, taking about **0.7 ms**.
+After `CREATE INDEX idx_orders_cust_incl ON orders(customer_id) INCLUDE (status);` and `VACUUM ANALYZE orders;`, the plan is an `Index Only Scan` with `Heap Fetches: 0`, taking about **0.7 ms**. Drop it with `DROP INDEX idx_orders_cust_incl;` before re-running the baseline.
 
 `INCLUDE` stores extra columns in the index, so the query can be answered from the index alone. Index-only scans need `VACUUM` to update the visibility map. Without it, `Heap Fetches` counts rows that still need a table lookup.
 
@@ -120,7 +120,7 @@ CREATE INDEX idx_products_name_pattern ON products(name text_pattern_ops);
 
 The prefix query becomes a `Bitmap Index Scan` and takes about **0.10 ms**. The infix query still uses a `Seq Scan`, because a B-tree index can only search from the start of a value.
 
-`text_pattern_ops` is needed for `LIKE` when the database isn't using the C locale. For infix or case-insensitive search, use the `pg_trgm` extension instead (not tested here).
+`text_pattern_ops` is needed for `LIKE` when the database isn't using the C locale. For infix or case-insensitive search, use the `pg_trgm` extension instead (not tested here). Drop the index with `DROP INDEX idx_products_name_pattern;` before re-running the baseline.
 
 ## 7. Deep `OFFSET` pagination vs keyset pagination
 
@@ -169,7 +169,7 @@ ORDER BY indexrelname;
 
 ## Resetting between experiments
 
-`drop_indexes.sql` removes the indexes from `indexes.sql`, so you can compare before and after without reseeding:
+`drop_indexes.sql` removes the indexes from `indexes.sql` and the experimental indexes created in Sections 3, 4, and 6, so you can compare before and after without reseeding:
 
 ```bash
 docker compose exec -T db psql -U postgres_user -d practice_db < drop_indexes.sql
